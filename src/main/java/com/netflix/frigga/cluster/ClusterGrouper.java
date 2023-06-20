@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * Utility methods for grouping ASG related objects by cluster. The cluster name is derived from the name of the ASG.
  */
-public class ClusterGrouper {
+public final class ClusterGrouper {
 
     private ClusterGrouper() { }
 
@@ -37,11 +37,11 @@ public class ClusterGrouper {
      * @return map of cluster name to list of input object
      */
     public static <T> Map<String, List<T>> groupByClusterName(List<T> inputs, AsgNameProvider<T> nameProvider) {
-        Map<String, List<T>> clusterNamesToAsgs = new HashMap<String, List<T>>();
+        Map<String, List<T>> clusterNamesToAsgs = new HashMap<>();
         for (T input : inputs) {
             String clusterName = Names.parseName(nameProvider.extractAsgName(input)).getCluster();
             if (!clusterNamesToAsgs.containsKey(clusterName)) {
-                clusterNamesToAsgs.put(clusterName, new ArrayList<T>());
+                clusterNamesToAsgs.put(clusterName, new ArrayList<>());
             }
             clusterNamesToAsgs.get(clusterName).add(input);
         }
@@ -55,11 +55,7 @@ public class ClusterGrouper {
      * @return map of cluster name to list of ASG names in that cluster
      */
     public static Map<String, List<String>> groupAsgNamesByClusterName(List<String> asgNames) {
-        return groupByClusterName(asgNames, new AsgNameProvider<String>() {
-            public String extractAsgName(String asgName) {
-                return asgName;
-            }
-        });
+        return groupByClusterName(asgNames, asgName -> asgName);
     }
 
 }
